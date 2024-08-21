@@ -19,7 +19,7 @@ func main() {
 		port = "3000" // Default port if not specified
 	}
 	client := connect.ConnectDB()
-
+	
 	app := fiber.New()
 
 	// Define a simple GET route using the environment variable
