@@ -15,6 +15,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"vectorcd/config"
 )
 
 func GetUsedPorts(collection *mongo.Collection) ([]string, error) {
@@ -72,7 +73,7 @@ func GetRandomPort(c *fiber.Ctx) error {
 	maxPort := 9000
 
 	randomPort, err := GetUnusedPort(collection, minPort, maxPort)
-	
+
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to get an unused port",
@@ -123,7 +124,7 @@ server {
 		fmt.Println("Error writing to file:", err)
 
 	}
-
+	config.ReloadNginx();
 	fmt.Println("NGINX configuration file created successfully at", filePath)
 
 	return c.JSON(fiber.Map{

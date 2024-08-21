@@ -5,6 +5,6 @@ import (
 )
 
 func ReloadNginx() error {
-	cmd := exec.Command("sudo", "nginx", "-s", "reload")
+	cmd := exec.Command("nginx", "-s", "reload")
 	return cmd.Run()
 }
