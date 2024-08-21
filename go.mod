@@ -1,4 +1,4 @@
-module vectordb
+module vectorcd
 
 go 1.22.4
 

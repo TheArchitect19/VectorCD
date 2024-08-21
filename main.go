@@ -6,7 +6,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/joho/godotenv"
-	"vectordb/connect"
+	"vectorcd/controllers"
 )
 
 func main() {
@@ -18,11 +18,10 @@ func main() {
 	if port == "" {
 		port = "3000" // Default port if not specified
 	}
-	client := connect.ConnectDB()
-	
+
 	app := fiber.New()
 
-	// Define a simple GET route using the environment variable
+	app.Get("/random-port", handlers.GetRandomPort)
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.SendString("Hello world!")
 	})

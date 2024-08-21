@@ -1,28 +1,21 @@
-package controllers
+package handlers
 
 import (
 	"context"
 	"math/rand"
+	"net/http"
 	"strconv"
 	"time"
 
+	"github.com/gofiber/fiber/v2"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
-	
+	"vectorcd/models"
+	"vectorcd/connect"
 )
-type App struct {
-	ID        primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`  
-	AppName   string             `bson:"app_name" json:"app_name"`      
-	Port      string             `bson:"port" json:"port"`       
-	Email     *string             `bson:"email" json:"email"`           
-	GithubId  *string             `bson:"github" json:"github"`               
-	CreatedAt primitive.DateTime `bson:"created_at,omitempty" json:"created_at,omitempty"`
-	UpdatedAt primitive.DateTime `bson:"updated_at,omitempty" json:"updated_at,omitempty"`
-}
 
 func GetUsedPorts(collection *mongo.Collection) ([]string, error) {
-	var apps []App
+	var apps []models.App
 	cursor, err := collection.Find(context.Background(), bson.M{})
 	if err != nil {
 		return nil, err
@@ -44,7 +37,6 @@ func GenerateRandomPort(minPort, maxPort int) int {
 	return rand.Intn(maxPort-minPort+1) + minPort
 }
 
-// GetUnusedPort finds an unused port by checking against the list of used ports
 func GetUnusedPort(collection *mongo.Collection, minPort, maxPort int) (int, error) {
 	usedPorts, err := GetUsedPorts(collection)
 	if err != nil {
@@ -63,9 +55,27 @@ func GetUnusedPort(collection *mongo.Collection, minPort, maxPort int) (int, err
 			}
 		}
 
-		// If the port is not in the used ports, return it
 		if !isUsed {
 			return randomPort, nil
 		}
 	}
+}
+
+func GetRandomPort(c *fiber.Ctx) error {
+	client := mongodb.ConnectDB()
+	collection := mongodb.GetCollection(client, "port") // Replace with your actual collection name
+
+	minPort := 8000
+	maxPort := 9000
+
+	randomPort, err := GetUnusedPort(collection, minPort, maxPort)
+	if err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to get an unused port",
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"unused_port": randomPort,
+	})
 }
