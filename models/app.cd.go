@@ -5,7 +5,7 @@ import (
 )
 
 
-type User struct {
+type App struct {
 	ID        primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`  // MongoDB ObjectID
 	AppName   string             `bson:"first_name" json:"first_name"`       // User's first name
 	Port      string             `bson:"last_name" json:"last_name"`         // User's last name
